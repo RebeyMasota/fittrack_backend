@@ -11,3 +11,14 @@
 
 #!.yarn/cache
 .pnp.*
+
+node_modules/
+.env
+.env.development
+.env.production
+
+.gitignore
+
+.yarn
+yarn.lock
+

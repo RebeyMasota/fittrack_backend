@@ -1,4 +1,42 @@
 {
   "name": "fittrack-backend",
-  "packageManager": "yarn@4.6.0"
+  "version": "1.0.0",
+  "main": "src/server.ts",
+  "scripts": {
+    "start:dev": "cross-env NODE_ENV=development nodemon src/server.ts",
+    "start:prod": "cross-env NODE_ENV=production nodemon src/server.ts",
+    "start": "NODE_ENV=production node dist/server.js",
+    "build": "tsc",
+    "seed": "ts-node src/seed.ts"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "@types/axios": "^0.14.4",
+    "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "graphql": "^16.9.0",
+    "graphql-subscriptions": "^3.0.0",
+    "graphql-tag": "^2.12.6",
+    "graphql-ws": "^5.14.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.0",
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.7.4",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
