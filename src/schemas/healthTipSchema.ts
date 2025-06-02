@@ -1,37 +1,63 @@
-// backend/src/schemas/healthTipSchema.ts
 import { gql } from 'graphql-tag';
 
 export const healthTipTypeDefs = gql`
-  enum HealthTipCategory {
-    nutrition
-    exercise
-    sleep
-    mental
-    hydration
+  type Range {
+    min: Float
+    max: Float
   }
 
   type HealthTip {
     id: ID!
     title: String!
     description: String!
-    category: HealthTipCategory!
+    category: String!
     icon: String!
     image: String
     link: String
+
+    # Filtering fields
+    fitnessGoal: String
+    ageRange: Range
+    gender: String
+    healthConditions: [String]
+    weightRange: Range
+    activityLevel: String
+    dietaryPreference: String
+    dietaryRestrictions: [String]
+    preferredWorkoutTypes: [String]
+
+    createdAt: String!
+    updatedAt: String!
   }
 
-  type Query {
-    getHealthTips(category: HealthTipCategory): [HealthTip!]!
-    getHealthTip(id: ID!): HealthTip
+  input RangeInput {
+    min: Float
+    max: Float
   }
 
   input HealthTipInput {
     title: String!
     description: String!
-    category: HealthTipCategory!
+    category: String!
     icon: String!
     image: String
     link: String
+
+    # Filtering fields
+    fitnessGoal: String
+    ageRange: RangeInput
+    gender: String
+    healthConditions: [String]
+    weightRange: RangeInput
+    activityLevel: String
+    dietaryPreference: String
+    dietaryRestrictions: [String]
+    preferredWorkoutTypes: [String]
+  }
+
+  type Query {
+    getHealthTips: [HealthTip!]!
+    getHealthTip(id: ID!): HealthTip
   }
 
   type Mutation {

@@ -1,75 +1,91 @@
-// backend/src/schemas/courseSchema.ts
 import { gql } from 'graphql-tag';
 
 export const courseTypeDefs = gql`
-  enum FitnessGoal {
-    "Lose Weight"
-    "Gain Muscle"
-    "Maintain Health"
+  type Range {
+    min: Float
+    max: Float
   }
 
-  enum CourseLevel {
-    Beginner
-    Intermediate
-    Advanced
-  }
-
-  type CourseStep {
+  type Step {
     id: String!
     title: String!
     content: String!
     illustration: String
     videoUrl: String
-    completed: Boolean
   }
 
-  type CourseTopic {
+  type Topic {
     id: String!
     title: String!
     description: String
-    steps: [CourseStep!]!
-    completed: Boolean
+    steps: [Step!]!
   }
 
   type Course {
     id: ID!
-    goal: FitnessGoal!
+    goal: String!
     title: String!
     description: String!
-    level: CourseLevel!
+    level: String!
     coverImage: String
-    topics: [CourseTopic!]!
+    topics: [Topic!]!
+
+    # Filtering fields
+    ageRange: Range
+    gender: String
+    healthConditions: [String]
+    weightRange: Range
+    activityLevel: String
+    dietaryPreference: String
+    dietaryRestrictions: [String]
+    preferredWorkoutTypes: [String]
+
+    createdAt: String!
+    updatedAt: String!
   }
 
-  type Query {
-    getCourses(goal: FitnessGoal, level: CourseLevel): [Course!]!
-    getCourse(id: ID!): Course
+  input RangeInput {
+    min: Float
+    max: Float
   }
 
-  input CourseStepInput {
+  input StepInput {
     id: String!
     title: String!
     content: String!
     illustration: String
     videoUrl: String
-    completed: Boolean
   }
 
-  input CourseTopicInput {
+  input TopicInput {
     id: String!
     title: String!
     description: String
-    steps: [CourseStepInput!]!
-    completed: Boolean
+    steps: [StepInput!]!
   }
 
   input CourseInput {
-    goal: FitnessGoal!
+    goal: String!
     title: String!
     description: String!
-    level: CourseLevel!
+    level: String!
     coverImage: String
-    topics: [CourseTopicInput!]!
+    topics: [TopicInput!]!
+
+    # Filtering fields
+    ageRange: RangeInput
+    gender: String
+    healthConditions: [String]
+    weightRange: RangeInput
+    activityLevel: String
+    dietaryPreference: String
+    dietaryRestrictions: [String]
+    preferredWorkoutTypes: [String]
+  }
+
+  type Query {
+    getCourses: [Course!]!
+    getCourse(id: ID!): Course
   }
 
   type Mutation {
