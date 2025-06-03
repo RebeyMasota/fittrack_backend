@@ -33,18 +33,9 @@ const httpServer = http.createServer(app);
 
 // Enhanced CORS configuration
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://10.0.2.2:3000',
-    'http://localhost:8081', // Metro bundler default
-    'http://127.0.0.1:8081',
-    'http://10.0.2.2:8081',
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: '*',
 }));
+
 
 // Add request logging middleware
 app.use((req, res, next) => {
