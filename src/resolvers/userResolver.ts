@@ -1,4 +1,4 @@
-import User from '../models/User';
+import User, { IUser } from '../models/User';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
@@ -11,6 +11,31 @@ const generateToken = (userId: string) => {
     { expiresIn: '30d' }
   );
 };
+
+const formatUser = (user: IUser) => {
+  const userObj = user.toObject();
+  return {
+    id: userObj._id.toString(),
+    email: userObj.email,
+    name: userObj.name || '', // handle undefined
+    age: userObj.age || null,
+    weight: userObj.weight || null,
+    height: userObj.height || null,
+    gender: userObj.gender || null,
+    fitnessGoal: userObj.fitnessGoal || null,
+    dietaryPreference: userObj.dietaryPreference || null,
+    healthConditions: userObj.healthConditions || [],
+    activityLevel: userObj.activityLevel || null,
+    preferredWorkoutTypes: userObj.preferredWorkoutTypes || [],
+    dietaryRestrictions: userObj.dietaryRestrictions || [],
+    bmi: userObj.bmi || null,
+    role: userObj.role || 'user', // default to 'user' if undefined
+    isProfileComplete: userObj.isProfileComplete,
+    createdAt: userObj.createdAt,
+    updatedAt: userObj.updatedAt,
+  };
+};
+
 
 export const userResolvers = {
   Query: {
@@ -187,23 +212,21 @@ export const userResolvers = {
     ) => {
       try {
         const user = await User.findOne({ email: email.toLowerCase() });
+        console.log('Login attempt for user:', email.toLowerCase());
         if (!user) {
           throw new Error('Invalid credentials');
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
+          console.log('Invalid password for user:', user.email);
           throw new Error('Invalid credentials');
         }
 
         const token = generateToken((user._id as Types.ObjectId).toString());
 
         return {
-          user: {
-            ...user.toObject(),
-            id: user._id as Types.ObjectId,
-            token,
-          },
+          user:formatUser(user),
           token,
         };
       } catch (error) {

@@ -24,6 +24,8 @@ import { didYouKnowTypeDefs } from './schemas/didYouKnowSchema';
 import { didYouKnowResolvers } from './resolvers/didYouKnowResolver';
 import { courseTypeDefs } from './schemas/courseSchema';
 import { courseResolvers } from './resolvers/courseResolver';
+import { socialFeedTypeDefs } from './schemas/socialFeedSchema';
+import { socialFeedResolvers } from './resolvers/socialFeedResolver';
 
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
 dotenv.config({ path: envFile });
@@ -33,18 +35,9 @@ const httpServer = http.createServer(app);
 
 // Enhanced CORS configuration
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://10.0.2.2:3000',
-    'http://localhost:8081', // Metro bundler default
-    'http://127.0.0.1:8081',
-    'http://10.0.2.2:8081',
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: '*',
 }));
+
 
 // Add request logging middleware
 app.use((req, res, next) => {
@@ -89,8 +82,8 @@ const getUser = async (token: string) => {
 
 // Create executable schema
 const schema = makeExecutableSchema({
-  typeDefs: [userTypeDefs, recommendationTypeDefs, exerciseTypeDefs, nutritionTypeDefs, healthTipTypeDefs, didYouKnowTypeDefs, courseTypeDefs],
-  resolvers: [userResolvers, recommendationResolvers, exerciseResolvers, nutritionResolvers, healthTipResolvers, didYouKnowResolvers, courseResolvers],
+  typeDefs: [userTypeDefs, recommendationTypeDefs, healthTipTypeDefs, didYouKnowTypeDefs, courseTypeDefs, socialFeedTypeDefs],
+  resolvers: [userResolvers, recommendationResolvers, healthTipResolvers, didYouKnowResolvers, courseResolvers, socialFeedResolvers],
 });
 
 // Set up WebSocket server for subscriptions

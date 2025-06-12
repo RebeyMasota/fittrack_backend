@@ -30,7 +30,7 @@ export const recommendationTypeDefs = gql`
     title: String!
     description: String!
     image: String
-    steps: [Step]           # Updated: steps is now an array of Step objects
+    steps: [Step]
     tips: [String]
     articles: [Article]
     macros: Macros
@@ -38,8 +38,6 @@ export const recommendationTypeDefs = gql`
     reminders: [String]
     dailyGoalMl: Int
     sleepGoalHours: Float
-
-    # Filtering fields (used only for filtering in resolvers)
     fitnessGoal: String
     ageRange: Range
     gender: String
@@ -49,7 +47,6 @@ export const recommendationTypeDefs = gql`
     dietaryPreference: String
     preferredWorkoutTypes: [String]
     dietaryRestrictions: [String]
-
     createdAt: String!
     updatedAt: String!
   }

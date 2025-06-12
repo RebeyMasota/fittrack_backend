@@ -20,6 +20,7 @@ export interface IUser extends Document {
     fitbit?: string;
     googleFit?: string;
   };
+  role?: 'user' | 'admin';
   isProfileComplete: boolean;
   lastRecommendationUpdate?: Date;
   createdAt: Date;
@@ -106,6 +107,11 @@ const userSchema = new Schema(
     apiTokens: {
       fitbit: { type: String },
       googleFit: { type: String },
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
     },
     isProfileComplete: {
       type: Boolean,
