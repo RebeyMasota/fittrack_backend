@@ -17,6 +17,7 @@ export const userTypeDefs = gql`
     preferredWorkoutTypes: [String!]
     dietaryRestrictions: [String!]
     bmi: Float
+    role: String
     isProfileComplete: Boolean!
     token: String
     createdAt: String!

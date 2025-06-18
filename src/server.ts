@@ -24,6 +24,8 @@ import { didYouKnowTypeDefs } from './schemas/didYouKnowSchema';
 import { didYouKnowResolvers } from './resolvers/didYouKnowResolver';
 import { courseTypeDefs } from './schemas/courseSchema';
 import { courseResolvers } from './resolvers/courseResolver';
+import { socialFeedTypeDefs } from './schemas/socialFeedSchema';
+import { socialFeedResolvers } from './resolvers/socialFeedResolver';
 
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
 dotenv.config({ path: envFile });
@@ -80,8 +82,8 @@ const getUser = async (token: string) => {
 
 // Create executable schema
 const schema = makeExecutableSchema({
-  typeDefs: [userTypeDefs, recommendationTypeDefs, exerciseTypeDefs, nutritionTypeDefs, healthTipTypeDefs, didYouKnowTypeDefs, courseTypeDefs],
-  resolvers: [userResolvers, recommendationResolvers, exerciseResolvers, nutritionResolvers, healthTipResolvers, didYouKnowResolvers, courseResolvers],
+  typeDefs: [userTypeDefs, recommendationTypeDefs, healthTipTypeDefs, didYouKnowTypeDefs, courseTypeDefs, socialFeedTypeDefs],
+  resolvers: [userResolvers, recommendationResolvers, healthTipResolvers, didYouKnowResolvers, courseResolvers, socialFeedResolvers],
 });
 
 // Set up WebSocket server for subscriptions
