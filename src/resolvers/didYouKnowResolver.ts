@@ -96,13 +96,35 @@ export const didYouKnowResolvers = {
 
       if (filterBase.$and.length === 0) delete filterBase.$and;
 
-      // Fetch only the 4 most recent items
-        const items = await DidYouKnow.find(filterBase).sort({ createdAt: -1 }).limit(4);
-        return items;
+      // Try to fetch up to 4 facts matching the full profile
+      let items = await DidYouKnow.find(filterBase).sort({ createdAt: -1 }).limit(4);
+
+      // If no matches, fallback to up to 4 defaults for user's fitnessGoal
+      if (!items || items.length === 0) {
+        items = await DidYouKnow.find({
+          fitnessGoal: userData.fitnessGoal,
+          // Optionally: gender: 'Both' or undefined for broadest match
+        })
+          .sort({ createdAt: -1 })
+          .limit(4);
+      }
+
+      return items;
     },
 
     getDidYouKnowItem: async (_: any, { id }: { id: string }) => {
       return await DidYouKnow.findById(id);
+    },
+    getAllDidYouKnow: async (_: any, { fitnessGoal }: { fitnessGoal?: string }, { user }: { user?: any }) => {
+      if (!user) throw new Error('Authentication required');
+      const userData = await User.findById(user.userId);
+      if (!userData) throw new Error('User not found');
+      if (userData.role !== 'admin') throw new Error('Not authorized');
+
+      const filter: any = {};
+      if (fitnessGoal) filter.fitnessGoal = fitnessGoal;
+
+      return await DidYouKnow.find(filter).sort({ createdAt: -1 });
     },
   },
   Mutation: {

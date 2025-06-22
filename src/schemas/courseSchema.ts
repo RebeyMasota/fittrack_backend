@@ -86,6 +86,7 @@ export const courseTypeDefs = gql`
   type Query {
     getCourses: [Course!]!
     getCourse(id: ID!): Course
+    getAllCourses(goal: String): [Course!]!
   }
 
   type Mutation {

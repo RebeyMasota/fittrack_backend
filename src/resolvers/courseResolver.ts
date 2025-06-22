@@ -97,12 +97,31 @@ export const courseResolvers = {
       if (filterBase.$and.length === 0) delete filterBase.$and;
 
       // Fetch all matching courses, most recent first
-        const courses = await Course.find(filterBase).sort({ createdAt: -1 });
-        return courses;
+      let courses = await Course.find(filterBase).sort({ createdAt: -1 });
+
+      // If no matches, fallback to the default course for user's goal
+      if (!courses || courses.length === 0) {
+        courses = await Course.find({
+          goal: userData.fitnessGoal,
+        }).sort({ createdAt: -1 });
+      }
+
+      return courses;
     },
 
     getCourse: async (_: any, { id }: { id: string }) => {
       return await Course.findById(id);
+    },
+    getAllCourses: async (_: any, { goal }: { goal?: string }, { user }: { user?: any }) => {
+      if (!user) throw new Error('Authentication required');
+      const userData = await User.findById(user.userId);
+      if (!userData) throw new Error('User not found');
+      if (userData.role !== 'admin') throw new Error('Not authorized');
+
+      const filter: any = {};
+      if (goal) filter.goal = goal;
+
+      return await Course.find(filter).sort({ createdAt: -1 });
     },
   },
   Mutation: {
