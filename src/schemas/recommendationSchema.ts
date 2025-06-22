@@ -103,6 +103,7 @@ export const recommendationTypeDefs = gql`
   type Query {
     getRecommendations: [Recommendation!]!
     getRecommendation(id: ID!): Recommendation
+    getAllRecommendations(category: String): [Recommendation!]!
   }
 
   type Mutation {
