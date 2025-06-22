@@ -46,6 +46,23 @@ const formatRecommendation = (rec: IRecommendation) => {
   };
 };
 
+// Helper function to get default recommendation for a category
+const getDefaultRecommendation = async (category: string) => {
+  return await Recommendation.findOne({
+    category,
+    // Check that all filtering fields don't exist (making it a default)
+    fitnessGoal: { $exists: false },
+    ageRange: { $exists: false },
+    gender: { $exists: false },
+    healthConditions: { $exists: false },
+    weightRange: { $exists: false },
+    activityLevel: { $exists: false },
+    dietaryPreference: { $exists: false },
+    preferredWorkoutTypes: { $exists: false },
+    dietaryRestrictions: { $exists: false }
+  }).sort({ createdAt: -1 });
+};
+
 export const recommendationResolvers = {
   Query: {
     getRecommendations: async (_: any, __: any, { user }: { user?: any }) => {
@@ -54,11 +71,10 @@ export const recommendationResolvers = {
       if (!userData) throw new Error('User not found');
 
       // If admin, return all recommendations without filters
-     if (userData.role === 'admin') {
+      if (userData.role === 'admin') {
         const recommendations = await Recommendation.find().sort({ createdAt: -1 });
         return recommendations.map(formatRecommendation);
       }
-
 
       // Build filter based on user profile
       const filterBase: any = {
@@ -149,24 +165,47 @@ export const recommendationResolvers = {
       if (filterBase.$and.length === 0) delete filterBase.$and;
 
       const categories = ['workout', 'nutrition', 'hydration', 'rest'];
+      
+      // First, try to get user-specific recommendations for each category
       const results = await Promise.all(
         categories.map(async (category) => {
           const rec = await Recommendation.findOne({
             ...filterBase,
             category
           }).sort({ createdAt: -1 });
-          return rec;
+          return { category, recommendation: rec };
         })
       );
 
-      // Filter out nulls (if no rec found for a category)
-      const filteredResults = results.filter(Boolean);
+      // For categories without matches, get default recommendations
+      const finalResults = await Promise.all(
+        results.map(async ({ category, recommendation }) => {
+          if (recommendation) {
+            // Found user-specific recommendation
+            return recommendation;
+          } else {
+            // No user-specific match found, get default for this category
+            console.log(`No user-specific recommendation found for ${category}, falling back to default`);
+            const defaultRec = await getDefaultRecommendation(category);
+            if (defaultRec) {
+              console.log(`Found default recommendation for ${category}: ${defaultRec.title}`);
+            } else {
+              console.log(`No default recommendation found for ${category}`);
+            }
+            return defaultRec;
+          }
+        })
+      );
 
-      return filteredResults;
+      // Filter out nulls and format the remaining recommendations
+      const validRecommendations = finalResults.filter((rec): rec is NonNullable<typeof rec> => rec !== null);
+
+      return validRecommendations.map(formatRecommendation);
     },
 
     getRecommendation: async (_: any, { id }: { id: string }) => {
-      return await Recommendation.findById(id);
+      const rec = await Recommendation.findById(id);
+      return rec ? formatRecommendation(rec) : null;
     },
   },
   Mutation: {
@@ -175,14 +214,14 @@ export const recommendationResolvers = {
       // Optionally: Only allow admins to create
       const rec = new Recommendation({ ...input });
       await rec.save();
-      return rec;
+      return formatRecommendation(rec);
     },
     updateRecommendation: async (_: any, { id, input }: any, { user }: { user?: any }) => {
       if (!user) throw new Error('Authentication required');
       // Optionally: Only allow admins to update
       const rec = await Recommendation.findByIdAndUpdate(id, input, { new: true });
       if (!rec) throw new Error('Recommendation not found');
-      return rec;
+      return formatRecommendation(rec);
     },
     deleteRecommendation: async (_: any, { id }: { id: string }, { user }: { user?: any }) => {
       if (!user) throw new Error('Authentication required');
