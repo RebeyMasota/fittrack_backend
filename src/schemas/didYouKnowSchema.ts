@@ -54,6 +54,7 @@ export const didYouKnowTypeDefs = gql`
   type Query {
     getDidYouKnow: [DidYouKnow!]!
     getDidYouKnowItem(id: ID!): DidYouKnow
+    getAllDidYouKnow(fitnessGoal: String): [DidYouKnow!]!
   }
 
   type Mutation {

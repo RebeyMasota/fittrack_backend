@@ -96,14 +96,35 @@ export const healthTipResolvers = {
 
       if (filterBase.$and.length === 0) delete filterBase.$and;
 
-      // Fetch only the 3 most recent tips
-      const tips = await HealthTip.find(filterBase).sort({ createdAt: -1 }).limit(3);
-      return tips;
+      // Fetch up to 3 tips matching the full profile
+      let tips = await HealthTip.find(filterBase).sort({ createdAt: -1 }).limit(3);
 
+      // If no matches, fallback to up to 3 defaults for user's fitnessGoal
+      if (!tips || tips.length === 0) {
+        tips = await HealthTip.find({
+          fitnessGoal: userData.fitnessGoal,
+        })
+          .sort({ createdAt: -1 })
+          .limit(3);
+      }
+
+      return tips;
     },
 
     getHealthTip: async (_: any, { id }: { id: string }) => {
       return await HealthTip.findById(id);
+    },
+
+    getAllHealthTips: async (_: any, { fitnessGoal }: { fitnessGoal?: string }, { user }: { user?: any }) => {
+      if (!user) throw new Error('Authentication required');
+      const userData = await User.findById(user.userId);
+      if (!userData) throw new Error('User not found');
+      if (userData.role !== 'admin') throw new Error('Not authorized');
+
+      const filter: any = {};
+      if (fitnessGoal) filter.fitnessGoal = fitnessGoal;
+
+      return await HealthTip.find(filter).sort({ createdAt: -1 });
     },
   },
   Mutation: {

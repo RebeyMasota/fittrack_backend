@@ -58,6 +58,7 @@ export const healthTipTypeDefs = gql`
   type Query {
     getHealthTips: [HealthTip!]!
     getHealthTip(id: ID!): HealthTip
+    getAllHealthTips(fitnessGoal: String): [HealthTip!]!
   }
 
   type Mutation {
